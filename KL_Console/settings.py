@@ -76,10 +76,22 @@ WSGI_APPLICATION = 'KL_Console.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql', # 数据库引擎
+        'NAME': 'kl_test',
+        'USER': 'kl_website', # 账号
+        'PASSWORD': 'CNZ7saogHL6QpuOB', # 密码
+        'HOST': '115.159.85.45', # HOST
+        'POST': 3306, # 端口
+
     }
 }
 
