@@ -1,16 +1,18 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, response
 from django.shortcuts import render
 from django.shortcuts import redirect
 
 import re
 
+# ==================== ip查询部分 start ====================
+# ip真实性核验
 def legit_ip(_ip):
     compile_ip = re.compile('^((25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(25[0-5]|2[0-4]\d|[01]?\d\d?)$')
     if compile_ip.match(_ip):
         return True
     else:
         return False
-
+# ip内网/外网区分
 def ip_intr_extr(huanggr):
     intr = [10,127,172,192]
     intranet_ips = []
@@ -22,7 +24,7 @@ def ip_intr_extr(huanggr):
                 intranet_ips.append(_ip.group())
     extranet_ips = list(set(huanggr)-set(intranet_ips))
     return intranet_ips,extranet_ips
-
+# ip内网检验
 def intranet_ip_check(ip):
     if legit_ip(ip):
         ip_lst = [ip]
@@ -33,16 +35,27 @@ def intranet_ip_check(ip):
     else:
         return False
 
+# ==================== 非django部分 end ====================
 def index(request):
+    print(request.session.get('userBasicInfo'))
     print(request.COOKIES.get("name"))
     print(request.COOKIES.get("passsword"))
-    if request.COOKIES.get("passsword") == None:
+    # if request.COOKIES.get("passsword") == None:
+    if request.session.get('is_login') != True:
         return redirect('/login/')
     else:
         return render(request, 'index.html')
 
+def logout(request):
+    if not request.session.get('is_login', None):
+        return redirect('/login/')
+    request.session.flush()
+    # response.delete_cookie()
+    return redirect('/login/')
+
 def login(request):
-    if request.COOKIES.get("passsword") == None:
+    # if request.COOKIES.get("passsword") == None:
+    if request.session.get('is_login') != True:
         if request.method == "POST":
             # print(request.body)
             # print(request.POST.get('workerId'))
@@ -75,10 +88,18 @@ def mfaVerify(request):
         else:
             # return render(request, 'mfa-verify.html')
             response = redirect('/',{"err":0,"userRealName":"张三"})
+            # response =  redirect('index:index')
             # 设置cookies
             response.set_cookie('name','test')
             # 设置加密cookies
-            response.set_signed_cookie('passsword','123456',max_age=3,salt='18268321hs')
+            response.set_signed_cookie('passsword','123456',max_age=7200,salt='18268321hs')
+            context={}
+            context['realName'] = '张三'
+            context['department'] = '综合办'
+            request.session['userBasicInfo'] = context
+            request.session['permissions'] = ['scoreAdmin','0']
+            request.session['is_login'] = True
+            request.session.set_expiry(7200)
             return response
 
     return render(request, 'mfa-verify.html')

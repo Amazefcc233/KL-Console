@@ -68,6 +68,16 @@
           <i class="fas fa-th-large"></i>
         </a>
       </li>
+      <li class="nav-item dropdown">
+        <a class="nav-link" data-toggle="dropdown" href="#">
+          <i class="far fa-bell"></i>
+        </a>
+        <div class="dropdown-menu dropdown-menu-sm dropdown-menu-right">
+          <span class="dropdown-header">{{ request.session.userBasicInfo.department }} - {{ request.session.userBasicInfo.realName }}</span>
+          <div class="dropdown-divider"></div>
+          <a href="./logout/" class="dropdown-item dropdown-footer">登出</a>
+        </div>
+      </li>
     </ul>
   </nav>
   <!-- /.navbar -->
@@ -89,7 +99,7 @@
         </div>
         <div class="info">
           <!-- <a href="#" class="d-block">Alexander Pierce</a> -->
-          <a href="#" class="d-block">{{ userRealName }}</a>
+          <a href="#" class="d-block">{{ request.session.userBasicInfo.department }} - {{ request.session.userBasicInfo.realName }}</a>
         </div>
       </div>
       {% block MainSidebar %}

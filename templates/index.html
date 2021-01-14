@@ -66,6 +66,7 @@
               <p>查看评分</p>
             </a>
           </li>
+          {% if 'scoreAdmin' in request.session.permissions %}
           <li class="nav-item">
             <a href="./Score/submit-score.html" class="nav-link">
               <i class="far fa-circle nav-icon"></i>
@@ -78,6 +79,7 @@
               <p>审核评分请求</p>
             </a>
           </li>
+          {% endif %}
         </ul>
       </li>
     </ul>
@@ -116,7 +118,7 @@
                 <h5 class="m-0">欢迎信息</h5>
               </div>
               <div class="card-body">
-                <h6 class="card-title">您好，张三，{{ userRealName }}</h6>
+                <h6 class="card-title">您好，{{ request.session.userBasicInfo.realName }}</h6>
 
                 <p class="card-text">欢迎使用坤链电子控制台</p>
               </div>
