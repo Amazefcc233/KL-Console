@@ -22,8 +22,16 @@ from . import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('',views.index),
+    # 用户验证操作 start
     path('login/', views.login),
     path('logout/', views.logout),
     path('mfaVerify/', views.mfaVerify),
-    path('api/login/', views.login),
+    # 用户验证操作 end
+    # 综评量化管理操作 start
+    path('score/submit/', views.scoreSubmit),
+    # 综评量化管理操作 end
+    # api操作 start
+    path('api/memberCheck/', views.api_memberCheck),
+    path('api/memberInfoLoad/', views.api_memberInfoLoad),
+    # api操作 end
 ]

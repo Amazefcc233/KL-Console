@@ -3,6 +3,7 @@ from django.shortcuts import render
 from django.shortcuts import redirect
 
 import re
+import json
 
 # ==================== ip查询部分 start ====================
 # ip真实性核验
@@ -47,10 +48,9 @@ def index(request):
         return render(request, 'index.html')
 
 def logout(request):
-    if not request.session.get('is_login', None):
+    if request.session.get('is_login') != True:
         return redirect('/login/')
     request.session.flush()
-    # response.delete_cookie()
     return redirect('/login/')
 
 def login(request):
@@ -95,9 +95,50 @@ def mfaVerify(request):
             context['realName'] = '张三'
             context['department'] = '综合办'
             request.session['userBasicInfo'] = context
-            request.session['permissions'] = ['scoreAdmin','0']
+            request.session['permissions'] = ['score_submit','0']
             request.session['is_login'] = True
             request.session.set_expiry(7200)
             return response
 
     return render(request, 'mfa-verify.html')
+
+def scoreSubmit(request):
+    if request.session.get('is_login') == True:
+        addScore = 1300
+        removeScore = 100
+        userScoreManagerInfo = {}
+        userScoreManagerInfo['addScore'] = addScore
+        userScoreManagerInfo['removeScore'] = removeScore
+        userScoreManagerInfo['arper'] = float('%.2f' % (userScoreManagerInfo['removeScore'] / userScoreManagerInfo['addScore'] * 100))
+        if userScoreManagerInfo['arper'] < 10.0:
+            userScoreManagerInfo['lastScore'] = int(userScoreManagerInfo['addScore'] * 0.1 - userScoreManagerInfo['removeScore'])
+        else:
+            userScoreManagerInfo['lastScore'] = 0
+        if request.method == "POST":
+            pass
+        # response = render(request, './Score/submit-score.html')
+        request.session['userScoreManagerInfo'] = userScoreManagerInfo
+        # return response
+        return render(request, './Score/submit-score.html')
+    else:
+        logout(request)
+
+def api_memberCheck(request):
+    if request.method == "POST":
+        if request.POST.get('workerId') == '0':
+            return HttpResponse('true')
+        else:
+            return HttpResponse('false')
+    else:
+        return redirect('/')
+
+def api_memberInfoLoad(request):
+    if request.method == "POST":
+        if request.POST.get('workerId') == '0':
+            message = {'err':0,'message':{'department':'综合办','realName':'张三'}}
+            return HttpResponse(json.dumps(message))
+        else:
+            message = {'err':404,'message':'0'}
+            return HttpResponse(json.dumps(message))
+    else:
+        return redirect('/')

@@ -1,0 +1,253 @@
+{% extends "base.html" %}
+
+{% block pageTitle %}提交评分请求{% endblock %}
+
+{% block MainSidebar %}
+{% load static %}
+  <!-- Sidebar Menu -->
+  <nav class="mt-2">
+    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+      <li class="nav-item">
+        <a href="/" class="nav-link">
+          <i class="nav-icon fas fa-tachometer-alt"></i>
+          <p>
+            控制台
+          </p>
+        </a>
+      </li>
+      <li class="nav-item menu-open">
+        <a href="#" class="nav-link active">
+          <i class="nav-icon fas fa-th"></i>
+          <p>
+            综评量化管理
+            <i class="right fas fa-angle-left"></i>
+          </p>
+        </a>
+        <ul class="nav nav-treeview">
+          <li class="nav-item">
+            <a href="#" class="nav-link">
+              <i class="far fa-circle nav-icon"></i>
+              <p>查看评分</p>
+            </a>
+          </li>
+          {% if 'score_submit' in request.session.permissions %}
+          <li class="nav-item">
+            <a href="/score/submit/" class="nav-link active">
+              <i class="far fa-circle nav-icon"></i>
+              <p>提交评分请求</p>
+            </a>
+          </li>
+          {% endif %}
+          {% if 'score_verify' in request.session.permissions %}
+          <li class="nav-item">
+            <a href="#" class="nav-link">
+              <i class="far fa-circle nav-icon"></i>
+              <p>审核评分请求</p>
+            </a>
+          </li>
+          {% endif %}
+        </ul>
+      </li>
+    </ul>
+  </nav>
+  <!-- /.sidebar-menu -->
+  {% endblock %}
+
+  {% block mainbody %}
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0">提交评分请求</h1>
+          </div><!-- /.col -->
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="index.html">主页</a></li>
+              <li class="breadcrumb-item active">综评量化管理</li>
+              <li class="breadcrumb-item active">提交评分请求</li>
+            </ol>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+
+    <!-- Main content -->
+    <div class="content">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-lg-3">
+            <!-- jquery validation -->
+            <div class="card card-primary">
+              <div class="card-header">
+                <h3 class="card-title">提交评分请求</h3>
+              </div>
+              <!-- /.card-header -->
+              <!-- form start -->
+              <form id="quickForm">
+                <div class="card-body">
+                  <div class="form-group">
+                    <label for="workerIdInput">员工工号</label>
+                    <input type="text" name="workerId" class="form-control" id="workerIdInput" placeholder="员工工号" AUTOCOMPLETE="off">
+                  </div>
+                  <div class="form-group">
+                    <label for="departmentInput">员工部门</label>
+                    <input type="text" name="department" class="form-control" id="departmentInput" placeholder="未读取到员工信息" disabled>
+                  </div>
+                  <div class="form-group">
+                    <label for="realNameInput">员工姓名</label>
+                    <input type="text" name="realName" class="form-control" id="realNameInput" placeholder="未读取到员工信息" disabled>
+                  </div>
+                  <div class="form-group">
+                    <label for="scoreChangeInput">变更数目<small>(扣分请输入负数)</small></label>
+                    <input type="number" name="scoreChange" class="form-control" id="scoreChangeInput" placeholder="分数变更数目">
+                  </div>
+                  <div class="form-group">
+                    <label for="changeReasonInput">变更原因</label>
+                    <textarea name="changeReason" class="form-control" rows="3" id="changeReasonInput" placeholder="变更原因"></textarea>
+                  </div>
+                </div>
+                <!-- /.card-body -->
+                <div class="card-footer">
+                  <button type="submit" class="btn btn-primary">提交</button>
+                </div>
+              </form>
+            </div>
+            <!-- /.card -->
+          </div>
+          <div class="col-lg-6">
+            <div class="card card-info">
+              <div class="card-header">
+                <h5 class="m-0">已递交的请求</h5>
+              </div>
+              <div class="card-body">
+                <h6 class="card-title">您好，张三</h6>
+  
+                <p class="card-text">欢迎使用坤链电子控制台</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="card">
+              <div class="card-header">
+                <h5 class="m-0">本月简报</h5>
+              </div>
+              <div class="card-body">
+                <!-- <h6 class="card-title">您好，{{ request.session.userBasicInfo.realName }}</h6> -->
+  
+                <p class="card-text">
+                    您本月已奖分总数：{{ request.session.userScoreManagerInfo.addScore }}<br>
+                    您本月已扣分总数：{{ request.session.userScoreManagerInfo.removeScore }}<br>
+                    {% if request.session.userScoreManagerInfo.arper < 10.0 %}
+                    当前扣/奖比例为：<span style="color:red">{{ request.session.userScoreManagerInfo.arper }}%</span><br>
+                    {% else %}
+                    当前扣/奖比例为：<span style="color:darkgreen">{{ request.session.userScoreManagerInfo.arper }}%</span><br>
+                    {% endif %}
+                    按照规定，当您的扣/奖比例少于<code>10%</code>时，您将会被扣除对应的数额。
+                    {% if request.session.userScoreManagerInfo.arper < 10.0 %}
+                    您当前还需要扣<code>{{ request.session.userScoreManagerInfo.lastScore }}</code>分才能突破此限制。</span><br>
+                    {% else %}
+                    您当前已突破此限制。<br>
+                    {% endif %}
+                    <small>* 仍需扣分数据可能存在误差，仅供参考<br>** 以上数据仅限于审核通过的条目</small>
+                </p>
+              </div>
+            </div>
+          </div>
+          <!-- /.col-md-6 -->
+        </div>
+        <!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content -->
+  </div>
+  <!-- /.content-wrapper -->
+{% endblock %}
+
+{% block otherJavaScript %}
+<!-- jquery-validation -->
+<script src="{% static 'plugins/jquery-validation/jquery.validate.min.js' %}"></script>
+<script src="{% static 'plugins/jquery-validation/additional-methods.min.js' %}"></script>
+<!-- Page specific script -->
+<script>
+  $(function () {
+    $.validator.setDefaults({
+      submitHandler: function () {
+        alert( "Form successful submitted!" );
+      }
+    });
+    $('#quickForm').validate({
+      onkeyup: false,
+      rules: {
+        workerId: {
+          required: true,
+          remote: {
+            url: '/api/memberCheck/',
+            type: 'POST',
+            dataType: 'json',
+            data: {
+              workerId:function(){ return $("#workerIdInput").val();}
+            },
+          },
+        },
+        scoreChange: {
+          required: true,
+          number: true,
+        },
+        changeReason: {
+          required: true,
+          minlength: 5
+        },
+      },
+      messages: {
+        workerId: {
+          required: '请输入员工工号',
+          remote: '无法读取此员工的信息，请确认工号是否正确输入'
+        },
+        scoreChange: {
+          required: "请输入变更数目",
+          number: "请输入有效数字"
+        },
+        changeReason: {
+          required: "请输入变更原因",
+          minlength: "原因不得少于5个字"
+        },
+      },
+      errorElement: 'span',
+      errorPlacement: function (error, element) {
+        error.addClass('invalid-feedback');
+        element.closest('.form-group').append(error);
+      },
+      highlight: function (element, errorClass, validClass) {
+        $(element).addClass('is-invalid');
+      },
+      unhighlight: function (element, errorClass, validClass) {
+        $(element).removeClass('is-invalid');
+      }
+    });
+    $('#workerIdInput').blur(function() {
+      $.ajax({
+          url: '/api/memberInfoLoad/',
+          type: 'POST',
+          dataType: 'json',
+          data: {workerId:function(){ return $("#workerIdInput").val();}},
+          complete: function (e) {
+            console.log(e)
+            var err =  e.responseJSON.err;
+            var message =  e.responseJSON.message;
+            if (err == 0) {
+              $('#departmentInput').val(message.department);
+              $('#realNameInput').val(message.realName);
+            } else {
+              $('#departmentInput').val(undefined);
+              $('#realNameInput').val('');
+            }
+          }
+      })
+    });
+  });
+  </script>
+{% endblock %}
