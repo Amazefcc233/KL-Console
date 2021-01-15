@@ -57,8 +57,6 @@ def login(request):
     # if request.COOKIES.get("passsword") == None:
     if request.session.get('is_login') != True:
         if request.method == "POST":
-            # print(request.body)
-            # print(request.POST.get('workerId'))
             if request.META.get('HTTP_X_FORWARDED_FOR'):
                 ip = request.META.get("HTTP_X_FORWARDED_FOR")
             else:
