@@ -36,16 +36,39 @@ def intranet_ip_check(ip):
     else:
         return False
 
+# ==================== 自定义部分 start ====================
+# 已登录认证
+def verifyRequest(request):
+    try:
+        loginStatus = request.session.get('is_login')
+    except:
+        loginStatus = False
+    return loginStatus
 # ==================== 非django部分 end ====================
 def index(request):
-    print(request.session.get('userBasicInfo'))
-    print(request.COOKIES.get("name"))
-    print(request.COOKIES.get("passsword"))
-    # if request.COOKIES.get("passsword") == None:
-    if request.session.get('is_login') != True:
+    if verifyRequest(request) != True:
         return redirect('/login/')
     else:
+        request.session['requestPath'] = '/index/'
         return render(request, 'index.html')
+
+def err404(request, exception):
+    if verifyRequest(request) != True:
+        return redirect('/login/')
+    else:
+        return render(request, '404.html')
+
+def err404_ne(request):
+    if verifyRequest(request) != True:
+        return redirect('/login/')
+    else:
+        return render(request, '404.html')
+
+def err500(request):
+    if verifyRequest(request) != True:
+        return redirect('/login/')
+    else:
+        return render(request, '500.html')
 
 def logout(request):
     if request.session.get('is_login') != True:
@@ -103,9 +126,9 @@ def mfaVerify(request):
     return render(request, 'mfa-verify.html')
 
 def scoreSubmit(request):
-    if request.session.get('is_login') == True:
+    if verifyRequest(request):
         addScore = 1300
-        removeScore = 100
+        removeScore = 1000
         userScoreManagerInfo = {}
         userScoreManagerInfo['addScore'] = addScore
         userScoreManagerInfo['removeScore'] = removeScore
@@ -119,9 +142,11 @@ def scoreSubmit(request):
         # response = render(request, './Score/submit-score.html')
         request.session['userScoreManagerInfo'] = userScoreManagerInfo
         # return response
-        return render(request, './Score/submit-score.html')
+        datas = {"submitHistory": [{"id":1,"realName":"张三","change":10,"date":"2020-02-20","reason":"test","status":"审核通过"},{"id":2,"realName":"张三","change":-100,"date":"2020-02-20","reason":"打人","status":"审核不通过"},{"id":3,"realName":"张三","change":10,"date":"2020-02-20","reason":"扫地积极","status":"待审核"}]}
+        request.session['requestPath'] = '/score/submit/'
+        return render(request, './Score/submit-score.html', datas)
     else:
-        logout(request)
+        return logout(request)
 
 def api_memberCheck(request):
     if request.method == "POST":

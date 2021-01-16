@@ -1,57 +1,7 @@
 {% extends "base.html" %}
 
 {% block pageTitle %}提交评分请求{% endblock %}
-
-{% block MainSidebar %}
 {% load static %}
-  <!-- Sidebar Menu -->
-  <nav class="mt-2">
-    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-      <li class="nav-item">
-        <a href="/" class="nav-link">
-          <i class="nav-icon fas fa-tachometer-alt"></i>
-          <p>
-            控制台
-          </p>
-        </a>
-      </li>
-      <li class="nav-item menu-open">
-        <a href="#" class="nav-link active">
-          <i class="nav-icon fas fa-th"></i>
-          <p>
-            综评量化管理
-            <i class="right fas fa-angle-left"></i>
-          </p>
-        </a>
-        <ul class="nav nav-treeview">
-          <li class="nav-item">
-            <a href="#" class="nav-link">
-              <i class="far fa-circle nav-icon"></i>
-              <p>查看评分</p>
-            </a>
-          </li>
-          {% if 'score_submit' in request.session.permissions %}
-          <li class="nav-item">
-            <a href="/score/submit/" class="nav-link active">
-              <i class="far fa-circle nav-icon"></i>
-              <p>提交评分请求</p>
-            </a>
-          </li>
-          {% endif %}
-          {% if 'score_verify' in request.session.permissions %}
-          <li class="nav-item">
-            <a href="#" class="nav-link">
-              <i class="far fa-circle nav-icon"></i>
-              <p>审核评分请求</p>
-            </a>
-          </li>
-          {% endif %}
-        </ul>
-      </li>
-    </ul>
-  </nav>
-  <!-- /.sidebar-menu -->
-  {% endblock %}
 
   {% block mainbody %}
   <!-- Content Wrapper. Contains page content -->
@@ -79,7 +29,7 @@
     <div class="content">
       <div class="container-fluid">
         <div class="row">
-          <div class="col-lg-3">
+          <div class="col-lg-5">
             <!-- jquery validation -->
             <div class="card card-primary">
               <div class="card-header">
@@ -89,17 +39,19 @@
               <!-- form start -->
               <form id="quickForm">
                 <div class="card-body">
-                  <div class="form-group">
-                    <label for="workerIdInput">员工工号</label>
-                    <input type="text" name="workerId" class="form-control" id="workerIdInput" placeholder="员工工号" AUTOCOMPLETE="off">
-                  </div>
-                  <div class="form-group">
-                    <label for="departmentInput">员工部门</label>
-                    <input type="text" name="department" class="form-control" id="departmentInput" placeholder="未读取到员工信息" disabled>
-                  </div>
-                  <div class="form-group">
-                    <label for="realNameInput">员工姓名</label>
-                    <input type="text" name="realName" class="form-control" id="realNameInput" placeholder="未读取到员工信息" disabled>
+                  <div class="row">
+                    <div class="form-group col-md-4">
+                      <label for="workerIdInput">员工工号</label>
+                      <input type="text" name="workerId" class="form-control" id="workerIdInput" placeholder="员工工号" AUTOCOMPLETE="off">
+                    </div>
+                    <div class="form-group col-md-4">
+                      <label for="departmentInput">员工部门</label>
+                      <input type="text" name="department" class="form-control" id="departmentInput" placeholder="未读取到员工信息" disabled>
+                    </div>
+                    <div class="form-group col-md-4">
+                      <label for="realNameInput">员工姓名</label>
+                      <input type="text" name="realName" class="form-control" id="realNameInput" placeholder="未读取到员工信息" disabled>
+                    </div>
                   </div>
                   <div class="form-group">
                     <label for="scoreChangeInput">变更数目<small>(扣分请输入负数)</small></label>
@@ -118,20 +70,8 @@
             </div>
             <!-- /.card -->
           </div>
-          <div class="col-lg-6">
+          <div class="col-7">
             <div class="card card-info">
-              <div class="card-header">
-                <h5 class="m-0">已递交的请求</h5>
-              </div>
-              <div class="card-body">
-                <h6 class="card-title">您好，张三</h6>
-  
-                <p class="card-text">欢迎使用坤链电子控制台</p>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-3">
-            <div class="card">
               <div class="card-header">
                 <h5 class="m-0">本月简报</h5>
               </div>
@@ -156,7 +96,74 @@
                 </p>
               </div>
             </div>
+            <!-- <div class="card card-info">
+              <div class="card-header">
+                <h5 class="m-0">已递交的请求</h5>
+              </div>
+              <div class="card-body">
+                <h6 class="card-title">您好，张三</h6>
+  
+                <p class="card-text">欢迎使用坤链电子控制台</p>
+              </div>
+            </div> -->
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">已递交的请求<small>(仅限最后一次更新在7天之内的数据)</small></h3>
+
+                <!-- <div class="card-tools">
+                  <div class="input-group input-group-sm" style="width: 150px;">
+                    <input type="text" name="table_search" class="form-control float-right" placeholder="Search">
+
+                    <div class="input-group-append">
+                      <button type="submit" class="btn btn-default">
+                        <i class="fas fa-search"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div> -->
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body table-responsive p-0">
+                <table class="table table-hover text-nowrap">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>姓名</th>
+                      <th>提交时间</th>
+                      <th>变更数目</th>
+                      <th>提交原因</th>
+                      <th>审核状态</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for submitHis in submitHistory %}
+                    <tr>
+                      <td>{{ submitHis.id }}</td>
+                      <td>{{ submitHis.realName }}</td>
+                      <td>{{ submitHis.date }}</td>
+                      <td>{{ submitHis.change }}</td>
+                      <td>{{ submitHis.reason }}</td>
+                      <td>{{ submitHis.status }}</td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+              <!-- /.card-body -->
+            </div>
           </div>
+          <!-- <div class="col-lg-6">
+            <div class="card card-info">
+              <div class="card-header">
+                <h5 class="m-0">已递交的请求</h5>
+              </div>
+              <div class="card-body">
+                <h6 class="card-title">您好，张三</h6>
+  
+                <p class="card-text">欢迎使用坤链电子控制台</p>
+              </div>
+            </div>
+          </div> -->
           <!-- /.col-md-6 -->
         </div>
         <!-- /.row -->
@@ -167,16 +174,66 @@
   <!-- /.content-wrapper -->
 {% endblock %}
 
+{% block otherCSS %}
+<!-- SweetAlert2 -->
+<!-- <link rel="stylesheet" href="{% static 'plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css' %}"> -->
+<!-- Toastr -->
+<link rel="stylesheet" href="{% static 'plugins/toastr/toastr.min.css' %}">
+{% endblock %}
+
 {% block otherJavaScript %}
 <!-- jquery-validation -->
 <script src="{% static 'plugins/jquery-validation/jquery.validate.min.js' %}"></script>
 <script src="{% static 'plugins/jquery-validation/additional-methods.min.js' %}"></script>
+<!-- SweetAlert2 -->
+<!-- <script src="{% static 'plugins/sweetalert2/sweetalert2.min.js' %}"></script> -->
+<!-- Toastr -->
+<script src="{% static 'plugins/toastr/toastr.min.js' %}"></script>
 <!-- Page specific script -->
 <script>
   $(function () {
     $.validator.setDefaults({
       submitHandler: function () {
-        alert( "Form successful submitted!" );
+        // var Toast = Swal.mixin({
+        //   toast: true,
+        //   position: 'top-end',
+        //   showConfirmButton: false,
+        //   timer: 3500
+        // });
+        // Toast.fire({
+        //   icon: 'success',
+        //   title: '请求提交成功，请等待审核'
+        // })
+        $.ajax({
+          url: '/api/submitScoreRequest/',
+          type: 'POST',
+          dataType: 'json',
+          data: {workerId:function(){ return $("#workerIdInput").val();},scoreChange:function(){ return $("#scoreChangeInput").val();},changeReason:function(){ return $("#changeReasonInput").val();}},
+          success: function (e) {
+            toastr.success('请求提交成功，请等待审核')
+            $('#workerIdInput').val('');
+            $('#departmentInput').val('');
+            $('#realNameInput').val('');
+            $('#scoreChangeInput').val('');
+            $('#changeReasonInput').val('');
+          },
+          error: function (e) {
+            toastr.error('请求提交失败，请联系管理员')
+            console.log(e)
+          }
+          // complete: function (e) {
+          //   console.log(e)
+          //   var err =  e.responseJSON.err;
+          //   var message =  e.responseJSON.message;
+          //   if (err == 0) {
+          //     $('#departmentInput').val(message.department);
+          //     $('#realNameInput').val(message.realName);
+          //   } else {
+          //     $('#departmentInput').val(undefined);
+          //     $('#realNameInput').val('');
+          //   }
+          // }
+        })
       }
     });
     $('#quickForm').validate({

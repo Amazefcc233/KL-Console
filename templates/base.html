@@ -12,6 +12,8 @@
   <link rel="stylesheet" href="{% static 'plugins/fontawesome-free/css/all.min.css' %}">
   <!-- Theme style -->
   <link rel="stylesheet" href="{% static 'dist/css/adminlte.min.css' %}">
+  {% block otherCSS %}
+  {% endblock %}
 </head>
 <body class="hold-transition sidebar-mini">
 <div class="wrapper">
@@ -70,12 +72,12 @@
       </li>
       <li class="nav-item dropdown">
         <a class="nav-link" data-toggle="dropdown" href="#">
-          <i class="far fa-bell"></i>
+          <i class="fas fa-user"></i>
         </a>
         <div class="dropdown-menu dropdown-menu-sm dropdown-menu-right">
           <span class="dropdown-header">{{ request.session.userBasicInfo.department }} - {{ request.session.userBasicInfo.realName }}</span>
           <div class="dropdown-divider"></div>
-          <a href="./logout/" class="dropdown-item dropdown-footer">登出</a>
+          <a href="/logout/" class="dropdown-item dropdown-footer">登出</a>
         </div>
       </li>
     </ul>
@@ -102,8 +104,113 @@
           <a href="#" class="d-block">{{ request.session.userBasicInfo.department }} - {{ request.session.userBasicInfo.realName }}</a>
         </div>
       </div>
-      {% block MainSidebar %}
-      {% endblock %}
+
+      <!-- Sidebar Menu -->
+      <nav class="mt-2">
+        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+          <!-- Add icons to the links using the .nav-icon class
+                with font-awesome or any other icon font library -->
+          <!-- backup start -->
+          <!-- <li class="nav-item menu-open">
+            <a href="#" class="nav-link active">
+              <i class="nav-icon fas fa-tachometer-alt"></i>
+              <p>
+                Starter Pages
+                <i class="right fas fa-angle-left"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="#" class="nav-link active">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Active Page</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Inactive Page</p>
+                </a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-item">
+            <a href="#" class="nav-link">
+              <i class="nav-icon fas fa-th"></i>
+              <p>
+                Simple Link
+                <span class="right badge badge-danger">New</span>
+              </p>
+            </a>
+          </li> -->
+          <!-- backup end -->
+          <li class="nav-item">
+            {% if request.session.requestPath == "/index/" %}
+            <a href="/" class="nav-link active">
+            {% else %}
+            <a href="/" class="nav-link">
+            {% endif %}
+              <i class="nav-icon fas fa-tachometer-alt"></i>
+              <p>
+                控制台
+              </p>
+            </a>
+          </li>
+          {% if "/score/" in request.session.requestPath %}
+          <li class="nav-item menu-open">
+            <a href="#" class="nav-link active">
+          {% else %}
+          <li class="nav-item">
+            <a href="#" class="nav-link">
+          {% endif %}
+              <i class="nav-icon fas fa-th"></i>
+              <p>
+                综评量化管理
+                <i class="right fas fa-angle-left"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              {% if 'score_look' in request.session.permissions %}
+              <li class="nav-item">
+                {% if request.session.requestPath == "/score/look/" %}
+                <a href="#" class="nav-link active">
+                {% else %}
+                <a href="#" class="nav-link">
+                {% endif %}
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>查看评分</p>
+                </a>
+              </li>
+              {% endif %}
+              {% if 'score_submit' in request.session.permissions %}
+              <li class="nav-item">
+                {% if request.session.requestPath == "/score/submit/" %}
+                <a href="/score/submit/" class="nav-link active">
+                {% else %}
+                <a href="/score/submit/" class="nav-link">
+                {% endif %}
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>提交评分请求</p>
+                </a>
+              </li>
+              {% endif %}
+              {% if 'score_verify' in request.session.permissions %}
+              <li class="nav-item">
+                {% if request.session.requestPath == "/score/verify/" %}
+                <a href="#" class="nav-link active">
+                {% else %}
+                <a href="#" class="nav-link">
+                {% endif %}
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>审核评分请求</p>
+                </a>
+              </li>
+              {% endif %}
+            </ul>
+          </li>
+        </ul>
+      </nav>
+      <!-- /.sidebar-menu -->
     </div>
   </aside>
 
@@ -127,7 +234,7 @@
       由 fcc 用 <i class="fas fa-heart"></i> 制作 | <a href="https://adminlte.io">AdminLTE</a> 提供技术支持
     </div>
     <!-- Default to the left -->
-    &copy; 2014-2020 上海坤链电子有限公司 <strong>版权所有</strong>.
+    &copy; 2000-<div id="bottom-years" style="display:inline-block"></div> 上海坤链电子有限公司 <strong>版权所有</strong>.
   </footer>
 </div>
 <!-- ./wrapper -->
@@ -140,6 +247,13 @@
 <script src="{% static 'plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
 <!-- AdminLTE App -->
 <script src="{% static 'dist/js/adminlte.min.js' %}"></script>
+<script>
+  var year = new Date().getFullYear();
+  $(document).ready(function () {
+    var btmYears = document.getElementById('bottom-years');
+    btmYears.innerHTML = year;
+  })
+</script>
 {% block otherJavaScript %}
 {% endblock %}
 </body>

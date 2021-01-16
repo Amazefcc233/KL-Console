@@ -13,6 +13,7 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.conf.urls import handler400, handler500
 from django.contrib import admin
 from django.urls import path
 from django.conf import settings
@@ -21,7 +22,11 @@ from . import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    # 网页基础内容 start
     path('',views.index),
+    path('404/',views.err404_ne),
+    path('500/',views.err500),
+    # 网页基础内容 end
     # 用户验证操作 start
     path('login/', views.login),
     path('logout/', views.logout),
@@ -35,3 +40,6 @@ urlpatterns = [
     path('api/memberInfoLoad/', views.api_memberInfoLoad),
     # api操作 end
 ]
+
+handler404 = views.err404
+handler500 = views.err500
