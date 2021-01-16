@@ -197,9 +197,9 @@
               {% if 'score_verify' in request.session.permissions %}
               <li class="nav-item">
                 {% if request.session.requestPath == "/score/verify/" %}
-                <a href="#" class="nav-link active">
+                <a href="/score/verify/" class="nav-link active">
                 {% else %}
-                <a href="#" class="nav-link">
+                <a href="/score/verify/" class="nav-link">
                 {% endif %}
                   <i class="far fa-circle nav-icon"></i>
                   <p>审核评分请求</p>

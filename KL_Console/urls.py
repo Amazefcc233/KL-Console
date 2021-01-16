@@ -34,6 +34,7 @@ urlpatterns = [
     # 用户验证操作 end
     # 综评量化管理操作 start
     path('score/submit/', views.scoreSubmit),
+    path('score/verify/', views.scoreVerify),
     # 综评量化管理操作 end
     # api操作 start
     path('api/memberCheck/', views.api_memberCheck),

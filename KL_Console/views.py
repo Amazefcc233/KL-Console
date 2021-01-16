@@ -118,7 +118,7 @@ def mfaVerify(request):
             context['realName'] = '张三'
             context['department'] = '综合办'
             request.session['userBasicInfo'] = context
-            request.session['permissions'] = ['score_submit','0']
+            request.session['permissions'] = ['score_submit','score_verify']
             request.session['is_login'] = True
             request.session.set_expiry(7200)
             return response
@@ -145,6 +145,16 @@ def scoreSubmit(request):
         datas = {"submitHistory": [{"id":1,"realName":"张三","change":10,"date":"2020-02-20","reason":"test","status":"审核通过"},{"id":2,"realName":"张三","change":-100,"date":"2020-02-20","reason":"打人","status":"审核不通过"},{"id":3,"realName":"张三","change":10,"date":"2020-02-20","reason":"扫地积极","status":"待审核"}]}
         request.session['requestPath'] = '/score/submit/'
         return render(request, './Score/submit-score.html', datas)
+    else:
+        return logout(request)
+
+def scoreVerify(request):
+    if verifyRequest(request):
+        if request.method == "POST":
+            pass
+        datas = {"submitHistory": [{"id":1,"realName":"张三","change":10,"date":"2020-02-20","reason":"test","author":"张三"},{"id":2,"realName":"张三","change":-100,"date":"2020-02-20","reason":"打人","author":"张三"},{"id":3,"realName":"张三","change":10,"date":"2020-02-20","reason":"扫地积极","author":"李四"}]}
+        request.session['requestPath'] = '/score/verify/'
+        return render(request, './Score/verify-score-request.html', datas)
     else:
         return logout(request)
 
