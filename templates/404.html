@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block pageTitle %}404{% endblock %}
+{% load static %}
+
+  {% block mainbody %}
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1>错误(404)</h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="/">主页</a></li>
+              <li class="breadcrumb-item active">404</li>
+            </ol>
+          </div>
+        </div>
+      </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="error-page">
+        <h2 class="headline text-warning"> 404</h2>
+
+        <div class="error-content">
+          <h3><i class="fas fa-exclamation-triangle text-warning"></i> 网页未找到</h3>
+
+          <p>
+            您所访问的网页<code>{{ request_path }}</code>无法显示。
+            该错误可能由以下原因导致：
+            <ul>
+              <li>不存在该网页</li>
+              <li>您没有对应的权限以查看此内容</li>
+            </ul>
+            如果您确认这是服务器错误，请联系管理员
+          </p>
+        </div>
+        <!-- /.error-content -->
+      </div>
+      <!-- /.error-page -->
+    </section>
+    <!-- /.content -->
+  </div>
+  <!-- /.content-wrapper -->
+  {% endblock %}
