@@ -1,0 +1,176 @@
+{% extends "base.html" %}
+
+{% block pageTitle %}审核评分请求{% endblock %}
+{% load static %}
+
+  {% block mainbody %}
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0">审核评分请求</h1>
+          </div><!-- /.col -->
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="index.html">主页</a></li>
+              <li class="breadcrumb-item active">综评量化管理</li>
+              <li class="breadcrumb-item active">审核评分请求</li>
+            </ol>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+
+    <!-- Main content -->
+    <div class="content">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-12">
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">当前暂未审核的请求</h3>
+              </div>
+              <div class="card-body">
+                <table id="example2" class="table table-bordered table-hover">
+                  <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>姓名</th>
+                    <th>提交时间</th>
+                    <th>变更数目</th>
+                    <th>提交原因</th>
+                    <th>提交者</th>
+                    <th>审核选项</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                    {% for submitHis in submitHistory %}
+                    <tr>
+                      <td>{{ submitHis.id }}</td>
+                      <td>{{ submitHis.realName }}</td>
+                      <td>{{ submitHis.date }}</td>
+                      <td>{{ submitHis.change }}</td>
+                      <td>{{ submitHis.reason }}</td>
+                      <td>{{ submitHis.author }}</td>
+                      <td><button type="button" class="btn btn-success btn-sm"><i class="fas fa-check"></i></button> <button type="button" class="btn btn-danger btn-sm"><i class="fas fa-ban"></i></button></td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                  <tfoot>
+                    <tr>
+                      <th>ID</th>
+                      <th>姓名</th>
+                      <th>提交时间</th>
+                      <th>变更数目</th>
+                      <th>提交原因</th>
+                      <th>提交者</th>
+                      <th>审核选项</th>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            </div>
+          </div>
+          <!-- /.col-md-6 -->
+        </div>
+        <div class="row">
+          <div class="col-12">
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">所有请求</h3>
+              </div>
+              <div class="card-body">
+                <table id="example2" class="table table-bordered table-hover">
+                  <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>姓名</th>
+                    <th>提交时间</th>
+                    <th>变更数目</th>
+                    <th>提交原因</th>
+                    <th>提交者</th>
+                    <th>审核选项</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                    {% for submitHis in submitHistory %}
+                    <tr>
+                      <td>{{ submitHis.id }}</td>
+                      <td>{{ submitHis.realName }}</td>
+                      <td>{{ submitHis.date }}</td>
+                      <td>{{ submitHis.change }}</td>
+                      <td>{{ submitHis.reason }}</td>
+                      <td>{{ submitHis.author }}</td>
+                      <td><button type="button" class="btn btn-success btn-sm"><i class="fas fa-check"></i></button> <button type="button" class="btn btn-danger btn-sm"><i class="fas fa-ban"></i></button></td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                  <tfoot>
+                    <tr>
+                      <th>ID</th>
+                      <th>姓名</th>
+                      <th>提交时间</th>
+                      <th>变更数目</th>
+                      <th>提交原因</th>
+                      <th>提交者</th>
+                      <th>审核选项</th>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            </div>
+          </div>
+          <!-- /.col-md-6 -->
+        </div>
+        <!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content -->
+  </div>
+  <!-- /.content-wrapper -->
+{% endblock %}
+
+{% block otherCSS %}
+<!-- DataTables -->
+<link rel="stylesheet" href="{% static 'plugins/datatables-bs4/css/dataTables.bootstrap4.min.css' %}">
+<link rel="stylesheet" href="{% static 'plugins/datatables-responsive/css/responsive.bootstrap4.min.css' %}">
+<link rel="stylesheet" href="{% static 'plugins/datatables-buttons/css/buttons.bootstrap4.min.css' %}">
+{% endblock %}
+
+{% block otherJavaScript %}
+<!-- DataTables  & Plugins -->
+<script src="{% static 'plugins/datatables/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-bs4/js/dataTables.bootstrap4.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-responsive/js/dataTables.responsive.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-responsive/js/responsive.bootstrap4.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-buttons/js/dataTables.buttons.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-buttons/js/buttons.bootstrap4.min.js' %}"></script>
+<script src="{% static 'plugins/jszip/jszip.min.js' %}"></script>
+<script src="{% static 'plugins/pdfmake/pdfmake.min.js' %}"></script>
+<script src="{% static 'plugins/pdfmake/vfs_fonts.js' %}"></script>
+<script src="{% static 'plugins/datatables-buttons/js/buttons.html5.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-buttons/js/buttons.print.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-buttons/js/buttons.colVis.min.js' %}"></script>
+<!-- Page specific script -->
+<script>
+  $(function () {
+    $("#example1").DataTable({
+      "responsive": true, "lengthChange": false, "autoWidth": false,
+      "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+    }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+    $('#example2').DataTable({
+      "paging": true,
+      "lengthChange": false,
+      "searching": false,
+      "ordering": true,
+      "info": true,
+      "autoWidth": false,
+      "responsive": true,
+    });
+  });
+</script>
+{% endblock %}
