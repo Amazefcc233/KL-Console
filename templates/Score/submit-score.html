@@ -15,7 +15,7 @@
           </div><!-- /.col -->
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a href="index.html">主页</a></li>
+              <li class="breadcrumb-item"><a href="/">主页</a></li>
               <li class="breadcrumb-item active">综评量化管理</li>
               <li class="breadcrumb-item active">提交评分请求</li>
             </ol>
@@ -70,7 +70,7 @@
             </div>
             <!-- /.card -->
           </div>
-          <div class="col-7">
+          <div class="col-lg-7">
             <div class="card card-info">
               <div class="card-header">
                 <h5 class="m-0">本月简报</h5>
@@ -86,11 +86,17 @@
                     {% else %}
                     当前扣/奖比例为：<span style="color:darkgreen">{{ request.session.userScoreManagerInfo.arper }}%</span><br>
                     {% endif %}
-                    按照规定，当您的扣/奖比例少于<code>10%</code>时，您将会被扣除对应的数额。
+                    按照当前规定，若您的本月总奖分少于<code>{{ request.session.userScoreManagerInfo.limitScore }}</code>时，您将会被扣除对应的数额。
+                    {% if request.session.userScoreManagerInfo.addScore < request.session.userScoreManagerInfo.limitScore %}
+                    您当前还需要奖<code>{{ request.session.userScoreManagerInfo.needAddScore }}</code>分才能突破此限制。</span><br>
+                    {% else %}
+                    您当前已突破此限制。<br>
+                    按照规定，若您的扣/奖比例少于<code>10%</code>时，您将会被扣除对应的数额。
                     {% if request.session.userScoreManagerInfo.arper < 10.0 %}
                     您当前还需要扣<code>{{ request.session.userScoreManagerInfo.lastScore }}</code>分才能突破此限制。</span><br>
                     {% else %}
                     您当前已突破此限制。<br>
+                    {% endif %}
                     {% endif %}
                     <small>* 仍需扣分数据可能存在误差，仅供参考<br>** 以上数据仅限于审核通过的条目</small>
                 </p>
@@ -177,8 +183,6 @@
 {% block otherCSS %}
 <!-- SweetAlert2 -->
 <!-- <link rel="stylesheet" href="{% static 'plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css' %}"> -->
-<!-- Toastr -->
-<link rel="stylesheet" href="{% static 'plugins/toastr/toastr.min.css' %}">
 {% endblock %}
 
 {% block otherJavaScript %}
@@ -187,8 +191,6 @@
 <script src="{% static 'plugins/jquery-validation/additional-methods.min.js' %}"></script>
 <!-- SweetAlert2 -->
 <!-- <script src="{% static 'plugins/sweetalert2/sweetalert2.min.js' %}"></script> -->
-<!-- Toastr -->
-<script src="{% static 'plugins/toastr/toastr.min.js' %}"></script>
 <!-- Page specific script -->
 <script>
   $(function () {
@@ -205,11 +207,13 @@
         //   title: '请求提交成功，请等待审核'
         // })
         $.ajax({
-          url: '/api/submitScoreRequest/',
+          // url: '/api/submitScoreRequest/',
+          url: '/score/submit/',
           type: 'POST',
           dataType: 'json',
           data: {workerId:function(){ return $("#workerIdInput").val();},scoreChange:function(){ return $("#scoreChangeInput").val();},changeReason:function(){ return $("#changeReasonInput").val();}},
           success: function (e) {
+            console.log(e)
             toastr.success('请求提交成功，请等待审核')
             $('#workerIdInput').val('');
             $('#departmentInput').val('');
