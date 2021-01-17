@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>坤链电子 | {% block pageTitle %}{% endblock %}</title>
+  <title>坤链 | {% block pageTitle %}{% endblock %}</title>
 
   <!-- Google Font: Source Sans Pro -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
@@ -12,6 +12,8 @@
   <link rel="stylesheet" href="{% static 'plugins/fontawesome-free/css/all.min.css' %}">
   <!-- Theme style -->
   <link rel="stylesheet" href="{% static 'dist/css/adminlte.min.css' %}">
+  <!-- Toastr -->
+  <link rel="stylesheet" href="{% static 'plugins/toastr/toastr.min.css' %}">
   {% block otherCSS %}
   {% endblock %}
 </head>
@@ -26,7 +28,10 @@
         <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
       </li>
       <li class="nav-item d-none d-sm-inline-block">
-        <a href="index.html" class="nav-link">主页</a>
+        <a href="/" class="nav-link">主页</a>
+      </li>
+      <li class="nav-item d-none d-sm-inline-block">
+        <small><span class="nav-link" style="color: red;">注：每周三 3:00 - 4:00 为系统维护时间，请避免在此期间进行高危操作</span></small>
       </li>
     </ul>
 
@@ -89,7 +94,7 @@
     <!-- Brand Logo -->
     <a href="index.html" class="brand-link">
       <img src="{% static 'dist/img/AdminLTELogo.png' %}" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
-      <span class="brand-text font-weight-light">坤链电子</span>
+      <span class="brand-text font-weight-light">坤链</span>
     </a>
 
     <!-- Sidebar -->
@@ -97,7 +102,8 @@
       <!-- Sidebar user panel (optional) -->
       <div class="user-panel mt-3 pb-3 mb-3 d-flex">
         <div class="image">
-          <img src="{% static 'dist/img/user2-160x160.jpg' %}" class="img-circle elevation-2" alt="User Image">
+          <!-- <img src="{% static 'dist/img/user2-160x160.jpg' %}" class="img-circle elevation-2" alt="User Image"> -->
+          <img src="{{ request.session.userBasicInfo.wxLogo }}" class="img-circle elevation-2" alt="User Image">
         </div>
         <div class="info">
           <!-- <a href="#" class="d-block">Alexander Pierce</a> -->
@@ -234,7 +240,7 @@
       由 fcc 用 <i class="fas fa-heart"></i> 制作 | <a href="https://adminlte.io">AdminLTE</a> 提供技术支持
     </div>
     <!-- Default to the left -->
-    &copy; 2000-<div id="bottom-years" style="display:inline-block"></div> 上海坤链电子有限公司 <strong>版权所有</strong>.
+    &copy; <div id="bottom-years" style="display:inline-block"></div> 坤链 <strong>版权所有</strong>.
   </footer>
 </div>
 <!-- ./wrapper -->
@@ -247,6 +253,8 @@
 <script src="{% static 'plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
 <!-- AdminLTE App -->
 <script src="{% static 'dist/js/adminlte.min.js' %}"></script>
+<!-- Toastr -->
+<script src="{% static 'plugins/toastr/toastr.min.js' %}"></script>
 <script>
   var year = new Date().getFullYear();
   $(document).ready(function () {
