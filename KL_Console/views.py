@@ -286,8 +286,8 @@ def scoreSubmit(request):
                 lst.append(context)
         else:
             context = {}
-        addScore = 150
-        removeScore = 10
+        # addScore = 150
+        # removeScore = 10
         userScoreManagerInfo = {}
         userScoreManagerInfo['addScore'] = addScore
         userScoreManagerInfo['removeScore'] = removeScore
