@@ -266,23 +266,23 @@ def scoreSubmit(request):
         removeScore = 0
         lst = []
         if data != None:
-            for i in data:
+            for i in range(0,len(data)):
                 context = {}
                 context["id"] = data[i][0]
                 context["realName"] = data[i][2]
-                context["change"] = data[i][7]
-                if int(data[i][7]) >= 0:
-                    addScore = addScore + int(data[i][7])
+                context["change"] = data[i][8]
+                if int(data[i][8]) >= 0:
+                    addScore = addScore + int(data[i][8])
                 else:
-                    removeScore = removeScore + int(data[i][7])
+                    removeScore = removeScore + int(data[i][8])
                 context["date"] = data[i][5]
-                context["reason"] = data[i][8]
-                if int(data[i][10]) == 0:
-                    context["status"] == '待审核'
-                elif int(data[i][10]) == 1:
-                    context["status"] == '已通过'
-                elif int(data[i][10]) == 2:
-                    context["status"] == '已驳回'
+                context["reason"] = data[i][9]
+                if int(data[i][11]) == 0:
+                    context["status"] = '待审核'
+                elif int(data[i][11]) == 1:
+                    context["status"] = '已通过'
+                elif int(data[i][11]) == 2:
+                    context["status"] = '已驳回'
                 lst.append(context)
         else:
             context = {}
@@ -290,7 +290,7 @@ def scoreSubmit(request):
         # removeScore = 10
         userScoreManagerInfo = {}
         userScoreManagerInfo['addScore'] = addScore
-        userScoreManagerInfo['removeScore'] = removeScore
+        userScoreManagerInfo['removeScore'] = abs(removeScore)
         userScoreManagerInfo['limitScore'] = limitScore
         if addScore == 0:
             userScoreManagerInfo['arper'] = 0.0
