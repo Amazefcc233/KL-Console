@@ -82,7 +82,7 @@
                     {% if request.session.userScoreManagerInfo.arper < 10.0 %}
                     当前扣/奖比例为：<span style="color:red">{{ request.session.userScoreManagerInfo.arper }}%</span><br>
                     {% else %}
-                    当前扣/奖比例为：<span style="color:darkgreen">{{ request.session.userScoreManagerInfo.arper }}%</span><br>
+                    当前扣/奖比例为：<span style="color:green">{{ request.session.userScoreManagerInfo.arper }}%</span><br>
                     {% endif %}
                     按照当前规定，若您的本月总奖分少于<code>{{ request.session.userScoreManagerInfo.limitScore }}</code>时，您将会被扣除对应的数额。
                     {% if request.session.userScoreManagerInfo.addScore < request.session.userScoreManagerInfo.limitScore %}
@@ -125,7 +125,7 @@
                       <td>{{ submitHis.date }}</td>
                       <td>{{ submitHis.change }}</td>
                       <td>{{ submitHis.reason }}</td>
-                      <td>{{ submitHis.status }}</td>
+                      <td>{{ submitHis.status|safe }}</td>
                     </tr>
                     {% endfor %}
                   </tbody>
