@@ -19,6 +19,7 @@ mysqlUserName = 'kl_website'
 mysqlPasswd = 'CNZ7saogHL6QpuOB'
 mysqlDB = 'kl_test'
 
+# ==================== 综评量化 奖分最低标准线 ====================
 limitScore = 150
 
 # ==================== ip查询部分 start ====================
@@ -235,7 +236,7 @@ def scoreSubmit(request):
                     times = int(time.time())
                     dateTime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
 
-                    cursor.execute(f"INSERT INTO `kl_logs_score_submit` (workerId, realName, department, timestamp, dateTime, lastUpdate, scoreChange, reason, operator, status) VALUES ('{workerId}', '{realName}', '{department}', '{times}', '{dateTime}', '{dateTime}', {scoreChange}, '{changeReason}', '{operator}', 0);")
+                    cursor.execute(f"INSERT INTO `kl_logs_score_submit` (workerId, realName, department, timestamp, dateTime, lastUpdateStamp, lastUpdate, scoreChange, reason, operator, status) VALUES ('{workerId}', '{realName}', '{department}', '{times}', '{dateTime}', '{times}','{dateTime}', {scoreChange}, '{changeReason}', '{operator}', 0);")
                     db.commit()
                     db.close()
                     return HttpResponse('{"err":0,"reason":"ok","message":""}')
@@ -257,7 +258,7 @@ def scoreSubmit(request):
 
         db = pymysql.connect(mysqlHost, mysqlUserName, mysqlPasswd, mysqlDB)
         cursor = db.cursor()
-        cursor.execute(f"SELECT * FROM `kl_logs_score_submit` WHERE `operator` = '{operator}' AND `timestamp` >= {monStartTimeStamp} AND `timestamp` <= {monEndTimeStamp};")
+        cursor.execute(f"SELECT * FROM `kl_logs_score_submit` WHERE `operator` = '{operator}' AND `lastUpdateStamp` >= {monStartTimeStamp} AND `lastUpdateStamp` <= {monEndTimeStamp};")
         db.commit()
         data = cursor.fetchall()
         db.close()
