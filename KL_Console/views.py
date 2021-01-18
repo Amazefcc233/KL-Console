@@ -228,7 +228,7 @@ def scoreSubmit(request):
                 data = cursor.fetchone()
                 if data == None:
                     db.close()
-                    message = '{"err":51400005,"message":"未寻找到此员工"}'
+                    message = '{"err":51400005,"reason":"Could not find that person","message":"未寻找到此员工"}'
                     return HttpResponse(message)
                 else:
                     department = data[2]
@@ -239,11 +239,12 @@ def scoreSubmit(request):
                     cursor.execute(f"INSERT INTO `kl_logs_score_submit` (workerId, realName, department, timestamp, dateTime, lastUpdateStamp, lastUpdate, scoreChange, reason, operator, status) VALUES ('{workerId}', '{realName}', '{department}', '{times}', '{dateTime}', '{times}','{dateTime}', {scoreChange}, '{changeReason}', '{operator}', 0);")
                     db.commit()
                     db.close()
-                    return HttpResponse('{"err":0,"reason":"ok","message":""}')
+                    message = '{"err":0,"reason":"ok","message":""}'
+                    return HttpResponse(message)
             except Exception as e:
                 db.close()
                 message = '{"err":-2,"reason":"Unknown","message":'+repr(e).replace('"','\\"')+'}'
-                return HttpResponse(json.dumps(message))
+                return HttpResponse(message)
         
         day_now = time.localtime()
         day_begin = '%d-%02d-01 00:00:00' % (day_now.tm_year, day_now.tm_mon)  # 月初肯定是1号
@@ -280,9 +281,9 @@ def scoreSubmit(request):
                 if int(data[i][11]) == 0:
                     context["status"] = '待审核'
                 elif int(data[i][11]) == 1:
-                    context["status"] = '已通过'
+                    context["status"] = '<span style="color:green">已通过</span>'
                 elif int(data[i][11]) == 2:
-                    context["status"] = '已驳回'
+                    context["status"] = '<span style="color:red">已驳回</span>'
                 lst.append(context)
         else:
             context = {}
@@ -318,11 +319,119 @@ def scoreVerify(request):
     verifyResult = verifyRequest(request,"/score/verify/")
     if verifyResult == True:
         if request.method == "POST":
-            pass
-        datas = {
-            "waitingVerify": [{"id":1,"realName":"张三","change":10,"date":"2020-02-20","reason":"test","author":"张三"},{"id":2,"realName":"张三","change":-100,"date":"2020-02-20","reason":"打人","author":"张三"},{"id":3,"realName":"张三","change":10,"date":"2020-02-20","reason":"扫地积极","author":"李四"}],
-            "allRequestsHistory": [{"id":1,"realName":"张三","change":10,"date":"2020-02-20","reason":"test","author":"张三","status":"已通过"},{"id":2,"realName":"张三","change":-100,"date":"2020-02-20","reason":"打人","author":"张三","status":"已驳回"},{"id":3,"realName":"张三","change":10,"date":"2020-02-20","reason":"扫地积极","author":"李四","status":"已通过"}],
-            }
+            id = int(request.POST.get('id'))
+            verify = int(request.POST.get('verify'))
+            verifier = request.session.get('userBasicInfo')['workerId']
+
+            db = pymysql.connect(mysqlHost, mysqlUserName, mysqlPasswd, mysqlDB)
+            cursor = db.cursor()
+
+            try:
+                cursor.execute(f"SELECT * FROM `kl_logs_score_submit` WHERE `id` = {id};")
+                db.commit()
+                data = cursor.fetchone()
+                if data == None:
+                    db.close()
+                    message = '{"err":51400006,"reason":"Fail to search target id","message":"无法查询到提交的id所对应的数据，请刷新后重试"}'
+                    return HttpResponse(message)
+                else:
+                    status = data[11]
+                    workerId = data[1]
+                    scoreChange = data[8]
+                    changeReason = data[9]
+                    if status != 0:
+                        db.close()
+                        message = '{"err":51400007,"reason":"Target id is not under verifying","message":"所提交的目标id已被审核完成，请刷新后重试"}'
+                        return HttpResponse(message)
+                    times = int(time.time())
+                    dateTime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+
+                    cursor.execute(f"UPDATE `kl_logs_score_submit` SET `status` = {verify}, `verifier` = '{verifier}', `lastUpdateStamp` = {times}, `lastUpdate` = '{dateTime}' WHERE `id` = {id};")
+                    db.commit()
+                    if verify == 2:
+                        db.close()
+                    else:
+                        cursor.execute(f"SELECT * FROM `kl_users` WHERE `workerId` = '{workerId}';")
+                        db.commit()
+                        data = cursor.fetchone()
+                        beforeChange = int(data[4])
+                        department = data[2]
+                        realName = data[1]
+                        afterChange = beforeChange + scoreChange
+                        cursor.execute(f"INSERT INTO `kl_logs_score` (workerId, realName, department, timestamp, dateTime, beforeChange, afterChange, scoreChange, reason, submitId) VALUES ('{workerId}', '{realName}', '{department}','{times}', '{dateTime}', {beforeChange}, {afterChange}, {scoreChange}, '{changeReason}', {id});")
+                        db.commit()
+                        cursor.execute(f"UPDATE `kl_users` SET `score` = '{afterChange}' WHERE `workerId` = '{workerId}';")
+                        db.commit()
+                        db.close()
+                    message = '{"err":0,"reason":"ok","message":""}'
+                    return HttpResponse(message)
+            except Exception as e:
+                db.close()
+                message = '{"err":-2,"reason":"Unknown","message":'+repr(e).replace('"','\\"')+'}'
+                return HttpResponse(message)
+
+        db = pymysql.connect(mysqlHost, mysqlUserName, mysqlPasswd, mysqlDB)
+        cursor = db.cursor()
+        cursor.execute(f"SELECT * FROM `kl_logs_score_submit` WHERE `status` = 0;")
+        db.commit()
+        data = cursor.fetchall()
+        lst = []
+        if data != None:
+            for i in range(0,len(data)):
+                context = {}
+                context["id"] = data[i][0]
+                context["realName"] = data[i][2]
+                context["change"] = data[i][8]
+                context["date"] = data[i][5]
+                context["reason"] = data[i][9]
+                author_workerId = data[i][10]
+                cursor.execute(f"SELECT * FROM `kl_users` WHERE `workerId` = {author_workerId};")
+                db.commit()
+                data_user = cursor.fetchone()
+                context["author"] = data_user[1]
+                lst.append(context)
+        else:
+            context = {}
+        
+        datas = {}
+        datas["waitingVerify"] = lst
+
+        cursor.execute(f"SELECT * FROM `kl_logs_score_submit`;")
+        db.commit()
+        data = cursor.fetchall()
+        lst = []
+        if data != None:
+            for i in range(0,len(data)):
+                context = {}
+                context["id"] = data[i][0]
+                context["realName"] = data[i][2]
+                context["change"] = data[i][8]
+                context["date"] = data[i][5]
+                context["reason"] = data[i][9]
+                author_workerId = data[i][10]
+                cursor.execute(f"SELECT * FROM `kl_users` WHERE `workerId` = {author_workerId};")
+                db.commit()
+                data_user = cursor.fetchone()
+                context["author"] = data_user[1]
+                if data[i][12] != None:
+                    cursor.execute(f"SELECT * FROM `kl_users` WHERE `workerId` = {data[i][12]};")
+                    db.commit()
+                    data_user = cursor.fetchone()
+                    context["verifier"] = data_user[1]
+                else:
+                    context["verifier"] = ''
+                if int(data[i][11]) == 0:
+                    context["status"] = '待审核'
+                elif int(data[i][11]) == 1:
+                    context["status"] = '<span style="color:green">已通过</span>'
+                elif int(data[i][11]) == 2:
+                    context["status"] = '<span style="color:red">已驳回</span>'
+                lst.append(context)
+        else:
+            context = {}
+        db.close()
+        datas["allRequestsHistory"] = lst
+
         request.session['requestPath'] = '/score/verify/'
         return render(request, './Score/verify-score-request.html', datas)
     else:

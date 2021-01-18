@@ -56,7 +56,7 @@
                       <td>{{ waitVerify.change }}</td>
                       <td>{{ waitVerify.reason }}</td>
                       <td>{{ waitVerify.author }}</td>
-                      <td><a href="#" class="btn btn-sm btn-success pass"><i class="fas fa-check"></i></a> <a href="#" class="btn btn-sm btn-danger remove"><i class="fas fa-ban"></i></a></td>
+                      <td><a href="#" id="passBtn" class="btn btn-sm btn-success pass"><i class="fas fa-check"></i></a> <a href="#" id="breakBtn" class="btn btn-sm btn-danger remove"><i class="fas fa-ban"></i></a></td>
                     </tr>
                     {% endfor %}
                   </tbody>
@@ -93,6 +93,7 @@
                       <th>变更数目</th>
                       <th>提交原因</th>
                       <th>提交者</th>
+                      <th>审核者</th>
                       <th>审核状态</th>
                     </tr>
                   </thead>
@@ -105,7 +106,8 @@
                       <td>{{ allRequests.change }}</td>
                       <td>{{ allRequests.reason }}</td>
                       <td>{{ allRequests.author }}</td>
-                      <td>{{ allRequests.status }}</td>
+                      <td>{{ allRequests.verifier }}</td>
+                      <td>{{ allRequests.status|safe }}</td>
                     </tr>
                     {% endfor %}
                   </tbody>
@@ -117,6 +119,7 @@
                       <th>变更数目</th>
                       <th>提交原因</th>
                       <th>提交者</th>
+                      <th>审核者</th>
                       <th>审核状态</th>
                     </tr>
                   </tfoot>
@@ -276,22 +279,88 @@
 		// Pass record
 		table.on( 'click', '.pass', function (e) {
 		    $tr = $(this).closest('tr');
+        $("[id = passBtn]").addClass('disabled');
+        $("[id = breakBtn]").addClass('disabled');
 
 		    var data = table.row($tr).data();
         // alert( 'You press on Row: ' + data[0] + ' ' + data[1] + ' ' + data[2] + '\'s row.' );
-        toastr.success('操作成功，id为 '+data[0]+' 的请求已通过')
-        table.row($tr).remove().draw();
-		    e.preventDefault();
+        $.ajax({
+          // url: '/api/submitScoreRequest/',
+          url: '/score/verify/',
+          type: 'POST',
+          dataType: 'json',
+          data: {
+            id: data[0],
+            verify: 1,
+          },
+          success: function (f) {
+            console.log(f)
+            var err = f.err;
+            var message = f.message;
+            if (err == 0) {
+              toastr.success('操作成功，id为 '+data[0]+' 的请求已通过')
+              table.row($tr).remove().draw();
+            } else if (err == 51400006) {
+              toastr.error('无法查询到提交的id所对应的数据，请刷新后重试')
+            } else if (err == 51400007) {
+              toastr.error('所提交的目标id已被审核完成，请刷新后重试')
+            } else {
+              toastr.error('发生未知错误，请打开控制台并联系管理员')
+            }
+          },
+          error: function (f) {
+            toastr.error('请求提交失败，请打开控制台并联系管理员')
+            console.log(f)
+          },
+          complete: function (f) {
+            $("[id = passBtn]").removeClass('disabled');
+            $("[id = breakBtn]").removeClass('disabled');
+            e.preventDefault();
+          }
+        })
 		});
 
 		// Delete a record
 		table.on( 'click', '.remove', function (e) {
         $tr = $(this).closest('tr');
+        $("[id = passBtn]").addClass('disabled');
+        $("[id = breakBtn]").addClass('disabled');
 
         var data = table.row($tr).data();
-        toastr.error('操作成功，id为 '+data[0]+' 的请求已驳回')
-		    table.row($tr).remove().draw();
-		    e.preventDefault();
+        $.ajax({
+          // url: '/api/submitScoreRequest/',
+          url: '/score/verify/',
+          type: 'POST',
+          dataType: 'json',
+          data: {
+            id: data[0],
+            verify: 2,
+          },
+          success: function (f) {
+            console.log(f)
+            var err = f.err;
+            var message = f.message;
+            if (err == 0) {
+              toastr.error('操作成功，id为 '+data[0]+' 的请求已驳回')
+              table.row($tr).remove().draw();
+            } else if (err == 51400006) {
+              toastr.error('无法查询到提交的id所对应的数据，请刷新后重试')
+            } else if (err == 51400007) {
+              toastr.error('所提交的目标id已被审核完成，请刷新后重试')
+            } else {
+              toastr.error('发生未知错误，请打开控制台并联系管理员')
+            }
+          },
+          error: function (f) {
+            toastr.error('请求提交失败，请打开控制台并联系管理员')
+            console.log(f)
+          },
+          complete: function (f) {
+            $("[id = passBtn]").removeClass('disabled');
+            $("[id = breakBtn]").removeClass('disabled');
+            e.preventDefault();
+          }
+        })
 		});
   });
 </script>
