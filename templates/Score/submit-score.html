@@ -214,15 +214,23 @@
           data: {workerId:function(){ return $("#workerIdInput").val();},scoreChange:function(){ return $("#scoreChangeInput").val();},changeReason:function(){ return $("#changeReasonInput").val();}},
           success: function (e) {
             console.log(e)
-            toastr.success('请求提交成功，请等待审核')
-            $('#workerIdInput').val('');
-            $('#departmentInput').val('');
-            $('#realNameInput').val('');
-            $('#scoreChangeInput').val('');
-            $('#changeReasonInput').val('');
+            var err =  e.responseJSON.err;
+            var message =  e.responseJSON.message;
+            if (err == 0) {
+              toastr.success('请求提交成功，请等待审核')
+              $('#workerIdInput').val('');
+              $('#departmentInput').val('');
+              $('#realNameInput').val('');
+              $('#scoreChangeInput').val('');
+              $('#changeReasonInput').val('');
+            } else if (err == 51400005) {
+              toastr.error('无法查询到所输入的员工工号对应的数据，请检查输入内容是否正确')
+            } else {
+              toastr.error('发生未知错误，请打开控制台并联系管理员')
+            }
           },
           error: function (e) {
-            toastr.error('请求提交失败，请联系管理员')
+            toastr.error('请求提交失败，请打开控制台并联系管理员')
             console.log(e)
           }
           // complete: function (e) {
