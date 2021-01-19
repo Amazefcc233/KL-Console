@@ -212,6 +212,33 @@
                 </a>
               </li>
               {% endif %}
+              <!-- {% if 'score_analysis' in request.session.permissions %}
+              {% if "/score/" in request.session.requestPath %}
+              <li class="nav-item menu-open">
+              {% else %}
+              <li class="nav-item">
+              {% endif %}
+                {% if "/score/analysis/" in request.session.requestPath %}
+                <a href="#" class="nav-link active">
+                {% else %}
+                <a href="#" class="nav-link">
+                {% endif %}
+                <i class="far fa-circle nav-icon"></i>
+                  <p>
+                    综评量化分析
+                    <i class="right fas fa-angle-left"></i>
+                  </p>
+                </a>
+                <ul class="nav nav-treeview">
+                  <li class="nav-item">
+                    <a href="/score/analysis/admin/" class="nav-link">
+                        <i class="fas fa-circle nav-icon"></i>
+                        <p>管理者分析</p>
+                    </a>
+                  </li>
+                </ul>
+              </li>
+              {% endif %} -->
             </ul>
           </li>
         </ul>

@@ -71,6 +71,8 @@ def verifyRequest(request,paths):
             return True
         elif paths == "/score/verify/" and "score_verify" in request.session.get('permissions'):
             return True
+        elif paths == "/score/analysis/" and "score_analysis" in request.session.get('permissions'):
+            return True
         else:
             return redirect('/404/')
 # ==================== 非django部分 end ====================
@@ -435,7 +437,19 @@ def scoreVerify(request):
         request.session['requestPath'] = '/score/verify/'
         return render(request, './Score/verify-score-request.html', datas)
     else:
-        return logout(request)
+        return verifyResult
+
+# def scoreAnalysis(request):
+#     verifyResult = verifyRequest(request,"/score/analysis/")
+#     if verifyResult == True:
+#         if request.method == "POST":
+#             pass
+#         request.session['requestPath'] = '/score/analysis/'
+#         datas = {"data":[28, 48, 40, 19, 86, 27, 90]}
+#         request.session['datas'] = datas
+#         return render(request, './Score/score-analysis.html', datas)
+#     else:
+#         return verifyResult
 
 def api_memberCheck(request):
     if request.method == "POST":
