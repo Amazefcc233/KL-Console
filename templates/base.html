@@ -179,9 +179,9 @@
               {% if 'score_look' in request.session.permissions %}
               <li class="nav-item">
                 {% if request.session.requestPath == "/score/look/" %}
-                <a href="#" class="nav-link active">
+                <a href="/score/look/" class="nav-link active">
                 {% else %}
-                <a href="#" class="nav-link">
+                <a href="/score/look/" class="nav-link">
                 {% endif %}
                   <i class="far fa-circle nav-icon"></i>
                   <p>查看评分</p>

@@ -33,6 +33,7 @@ urlpatterns = [
     path('mfaVerify/', views.mfaVerify),
     # 用户验证操作 end
     # 综评量化管理操作 start
+    path('score/look/', views.scoreLook),
     path('score/submit/', views.scoreSubmit),
     path('score/verify/', views.scoreVerify),
     # path('score/analysis/admin/', views.scoreAnalysis),待开发功能

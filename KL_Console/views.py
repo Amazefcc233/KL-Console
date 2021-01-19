@@ -212,6 +212,22 @@ def mfaVerify(request):
     else:
         return redirect('/logout/')
 
+def scoreLook(request):
+    verifyResult = verifyRequest(request,"/score/look/")
+    if verifyResult == True:
+        if request.method == "POST":
+            pass
+        request.session['requestPath'] = '/score/look/'
+        # datas = {"data":[28, 48, 40, 19, 86, 27, 90]}
+        # request.session['datas'] = datas
+        userScoreInfo = {}
+        userScoreInfo['allScore'] = 1300
+        userScoreInfo['thisMonthScore'] = 130
+        request.session['userScoreInfo'] = userScoreInfo
+        return render(request, './Score/look-score.html')
+    else:
+        return verifyResult
+
 def scoreSubmit(request):
     verifyResult = verifyRequest(request,"/score/submit/")
     if verifyResult == True:
