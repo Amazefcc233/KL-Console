@@ -73,6 +73,8 @@ def verifyRequest(request,paths):
             return True
         elif paths == "/score/analysis/" and "score_analysis" in request.session.get('permissions'):
             return True
+        elif paths == "/score/details/" and "score_details" in request.session.get('permissions'):
+            return True
         else:
             return redirect('/404/')
 # ==================== 非django部分 end ====================
@@ -514,6 +516,16 @@ def scoreVerify(request):
 
         request.session['requestPath'] = '/score/verify/'
         return render(request, './Score/verify-score-request.html', datas)
+    else:
+        return verifyResult
+
+def scoreDetails(request):
+    verifyResult = verifyRequest(request,"/score/details/")
+    if verifyResult == True:
+        if request.method == "POST":
+            pass
+        request.session['requestPath'] = '/score/details/'
+        return render(request, './Score/score-details.html')
     else:
         return verifyResult
 
