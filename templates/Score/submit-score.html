@@ -53,13 +53,27 @@
                       <input type="text" name="realName" class="form-control" id="realNameInput" placeholder="未读取到员工信息" disabled>
                     </div>
                   </div>
-                  <div class="form-group">
-                    <label for="scoreChangeInput">变更数目<small>(扣分请输入负数)</small></label>
-                    <input type="number" name="scoreChange" class="form-control" id="scoreChangeInput" placeholder="分数变更数目">
+                  <div class="row">
+                    <div class="form-group col-6">
+                      <label>评分类型</label>
+                      <select class="form-control" name="scoreType" id="scoreTypeSelect">
+                        <option value="1">固定分</option>
+                        <option value="2">出勤分</option>
+                        <option value="3" selected>事件分</option>
+                      </select>
+                    </div>
+                    <div class="form-group col-6">
+                      <label for="scoreChangeInput">变更数目<small>(扣分请输入负数)</small></label>
+                      <input type="number" name="scoreChange" class="form-control" id="scoreChangeInput" placeholder="分数变更数目">
+                    </div>
                   </div>
                   <div class="form-group">
                     <label for="changeReasonInput">变更原因<small>(至少需输入2个字)</small></label>
                     <textarea name="changeReason" class="form-control" rows="3" id="changeReasonInput" placeholder="变更原因"></textarea>
+                  </div>
+                  <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="rememberDetailsCheck" name="rememberDetails">
+                    <label class="form-check-label" for="rememberDetailsCheck">提交时仅清除员工信息</label>
                   </div>
                 </div>
                 <!-- /.card-body -->
@@ -69,6 +83,28 @@
               </form>
             </div>
             <!-- /.card -->
+            <div class="card card-success">
+              <div class="card-header">
+                <h3 class="card-title">批量提交评分请求</h3>
+              </div>
+              <!-- /.card-header -->
+              <!-- form start -->
+              <form id="execlUploadTaS1" method="POST" enctype="multipart/form-data" action="/uploadExcelFile/">
+                <div class="card-body">
+                  <div class="input-group">
+                    <div class="custom-file">
+                      <input type="file" name="fileUpload" class="custom-file-input" id="excelFileUploadTaS1">
+                      <label class="custom-file-label" for="customFile">选择需上传文件...(A1栏不可改动)</label>
+                    </div>
+                  </div>
+                </div>
+                <!-- /.card-body -->
+                <div class="card-footer">
+                  <input type="submit" value="提交" class="btn btn-primary" />
+                  <button type="submit"  id="submitFile">提交</button>
+                </div>
+              </form>
+            </div>
           </div>
           <div class="col-lg-7">
             <div class="card card-info">
@@ -112,6 +148,7 @@
                       <th>ID</th>
                       <th>姓名</th>
                       <th>提交时间</th>
+                      <th>类型</th>
                       <th>变更数目</th>
                       <th>提交原因</th>
                       <th>审核状态</th>
@@ -123,6 +160,7 @@
                       <td>{{ submitHis.id }}</td>
                       <td>{{ submitHis.realName }}</td>
                       <td>{{ submitHis.date }}</td>
+                      <td>{{ submitHis.type }}</td>
                       <td>{{ submitHis.change }}</td>
                       <td>{{ submitHis.reason }}</td>
                       <td>{{ submitHis.status|safe }}</td>
@@ -154,39 +192,43 @@
 <script src="{% static 'plugins/jquery-validation/additional-methods.min.js' %}"></script>
 <!-- SweetAlert2 -->
 <!-- <script src="{% static 'plugins/sweetalert2/sweetalert2.min.js' %}"></script> -->
+<!-- bs-custom-file-input -->
+<script src="{% static 'plugins/bs-custom-file-input/bs-custom-file-input.min.js' %}"></script>
 <!-- Page specific script -->
 <script>
   $(function () {
+    bsCustomFileInput.init();
     $.validator.setDefaults({
       submitHandler: function () {
-        // var Toast = Swal.mixin({
-        //   toast: true,
-        //   position: 'top-end',
-        //   showConfirmButton: false,
-        //   timer: 3500
-        // });
-        // Toast.fire({
-        //   icon: 'success',
-        //   title: '请求提交成功，请等待审核'
-        // })
         $('#submitScore').addClass('disabled');
         $.ajax({
           // url: '/api/submitScoreRequest/',
           url: '/score/submit/',
           type: 'POST',
           dataType: 'json',
-          data: {workerId:function(){ return $("#workerIdInput").val();},scoreChange:function(){ return $("#scoreChangeInput").val();},changeReason:function(){ return $("#changeReasonInput").val();}},
+          data: {
+            workerId:function(){ return $("#workerIdInput").val();},
+            scoreChange:function(){ return $("#scoreChangeInput").val();},
+            changeReason:function(){ return $("#changeReasonInput").val();},
+            scoreType:function(){ return $("#scoreTypeSelect").val();}
+          },
           success: function (e) {
             console.log(e)
             var err =  e.err;
             var message =  e.message;
             if (err == 0) {
               toastr.success('请求提交成功，请等待审核')
-              $('#workerIdInput').val('');
-              $('#departmentInput').val('');
-              $('#realNameInput').val('');
-              $('#scoreChangeInput').val('');
-              $('#changeReasonInput').val('');
+              if ($('#rememberDetailsCheck').is(':checked') == false) {
+                $('#workerIdInput').val('');
+                $('#departmentInput').val('');
+                $('#realNameInput').val('');
+                $('#scoreChangeInput').val('');
+                $('#changeReasonInput').val('');
+              } else {
+                $('#workerIdInput').val('');
+                $('#departmentInput').val('');
+                $('#realNameInput').val('');
+              }
             } else if (err == 51400005) {
               toastr.error('无法查询到所输入的员工工号对应的数据，请检查输入内容是否正确')
             } else {
@@ -198,18 +240,6 @@
             toastr.error('请求提交失败，请打开控制台并联系管理员')
             console.log(e)
           }
-          // complete: function (e) {
-          //   console.log(e)
-          //   var err =  e.responseJSON.err;
-          //   var message =  e.responseJSON.message;
-          //   if (err == 0) {
-          //     $('#departmentInput').val(message.department);
-          //     $('#realNameInput').val(message.realName);
-          //   } else {
-          //     $('#departmentInput').val(undefined);
-          //     $('#realNameInput').val('');
-          //   }
-          // }
         })
       }
     });
@@ -249,6 +279,9 @@
           required: "请输入变更原因",
           minlength: "原因不得少于2个字"
         },
+        rememberDetails: {
+          required: false
+        },
       },
       errorElement: 'span',
       errorPlacement: function (error, element) {
@@ -281,6 +314,25 @@
             }
           }
       })
+    });
+    $('#execlUploadTaS1').validate({
+      onkeyup: false,
+      rules: {
+        excelFileUploadTaS1: {
+          required: true
+        },
+      },
+      errorElement: 'span',
+      errorPlacement: function (error, element) {
+        error.addClass('invalid-feedback');
+        element.closest('.input-group').append(error);
+      },
+      highlight: function (element, errorClass, validClass) {
+        $(element).addClass('is-invalid');
+      },
+      unhighlight: function (element, errorClass, validClass) {
+        $(element).removeClass('is-invalid');
+      }
     });
   });
   </script>

@@ -37,6 +37,7 @@ urlpatterns = [
     path('score/submit/', views.scoreSubmit),
     path('score/verify/', views.scoreVerify),
     # path('score/analysis/admin/', views.scoreAnalysis),待开发功能
+    path('score/analysis/', views.scoreAnalysis),
     # 综评量化管理操作 end
     # api操作 start
     path('api/memberCheck/', views.api_memberCheck),

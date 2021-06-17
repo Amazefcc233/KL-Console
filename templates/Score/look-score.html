@@ -30,42 +30,36 @@
       <div class="container-fluid">
         <div class="row">
           <div class="col-lg-4">
-            <div class="card">
+            <div class="card card-primary">
               <div class="card-header">
-                <h5 class="m-0">基本信息</h5>
+                <h5 class="m-0">个人信息</h5>
               </div>
               <div class="card-body">
                 <p class="card-text">
-                  您当前的综评量化分为：{{ request.session.userScoreInfo.allScore }}<br>
-                  您本月的综评量化分为：{{ request.session.userScoreInfo.thisMonthScore }}<br>
-                  当前及本月的综评量化分排名，请等待统一公布
-                  <!-- 您当前的综评量化分排名为：{{ request.session.userScoreInfo.allScoreRank }}<br>
-                  您本月的综评量化分排名为：{{ request.session.userScoreInfo.thisMonthScoreRank }}<br> -->
+                  您当前的综评量化分<code>{{ request.session.userScoreInfo.dailyReport.totalMonthScore }}</code>分。<br>
+                  其中事件分共被奖<code>{{ request.session.userScoreInfo.dailyReport.eventAddScore }}</code>次，被罚<code>{{ request.session.userScoreInfo.dailyReport.eventDelScore }}</code>次，总计共得<code>{{ request.session.userScoreInfo.dailyReport.eventScore }}</code>分。<br>
+                  再接再励！<br>
+                  <small>*数据为缓存数据，来源截止至昨日。</small>
+                  <small>**若部分项目为None，则表明此项目暂无数据。</small>
                 </p>
               </div>
             </div>
           </div>
           <div class="col-lg-4">
-            <div class="card">
+            <div class="card card-info">
               <div class="card-header">
-                <h5 class="m-0">个人综评量化变化<small>(近六月，每月分)</small></h5>
+                <h5 class="m-0">上月月报</h5>
               </div>
               <div class="card-body">
-                <div class="chart">
-                  <canvas id="lineChart1" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="col-lg-4">
-            <div class="card">
-              <div class="card-header">
-                <h5 class="m-0">个人综评量化变化<small>(近六月，总分)</small></h5>
-              </div>
-              <div class="card-body">
-                <div class="chart">
-                  <canvas id="lineChart2" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
-                </div>
+                <p class="card-text">
+                  您上月共得综评量化分<code>{{ request.session.userScoreInfo.monthReport.totalMonthScore }}</code>分，排名第<code>{{ request.session.userScoreInfo.monthReport.totalMonthRank }}</code>名。<br>
+                  其中包含固定分共<code>{{ request.session.userScoreInfo.monthReport.fixedScore }}</code>分，出勤分共<code>{{ request.session.userScoreInfo.monthReport.attendScore }}</code>分。<br>
+                  您上月的事件分共被奖<code>{{ request.session.userScoreInfo.monthReport.eventAddScore }}</code>次，被罚<code>{{ request.session.userScoreInfo.monthReport.eventDelScore }}</code>次，总计共得<code>{{ request.session.userScoreInfo.monthReport.eventScore }}</code>分。<br>
+                  <hr />
+                  截至上月，您的综评量化分共为<code>{{ request.session.userScoreInfo.monthReport.totalScore }}</code>分，排名第<code>{{ request.session.userScoreInfo.monthReport.totalRank }}</code>名。较以往共变化<code>{{ request.session.userScoreInfo.monthReport.totalRankChange }}</code>名。<br>
+                  截至上月，您的综评量化年度分为<code>{{ request.session.userScoreInfo.monthReport.yearScore }}</code>分，排名第<code>{{ request.session.userScoreInfo.monthReport.yearRank }}</code>名。较以往共变化<code>{{ request.session.userScoreInfo.monthReport.yearRankChange }}</code>名。<br>
+                  <small>**若部分项目为None，则表明此项目暂无数据。</small>
+                </p>
               </div>
             </div>
           </div>
@@ -81,132 +75,5 @@
 <!-- ChartJS -->
 <script src="{% static 'plugins/chart.js/Chart.min.js' %}"></script>
 <!-- Page specific script -->
-<script>
-  $(function () {
-    /* ChartJS
-     * -------
-     * Here we will create a few charts using ChartJS
-     */
 
-    //-------------
-    //- LINE CHART1 -
-    //--------------
-    var lineChartCanvas = $('#lineChart1').get(0).getContext('2d')
-    // var lineChartOptions = $.extend(true, {}, areaChartOptions)
-    var lineChartOptions = {
-      maintainAspectRatio : false,
-      responsive : true,
-      legend: {
-        display: true
-      },
-      scales: {
-        xAxes: [{
-          gridLines : {
-            display : true,
-          }
-        }],
-        yAxes: [{
-          gridLines : {
-            display : false,
-          }
-        }]
-      }
-    }
-    // var lineChartData = $.extend(true, {}, areaChartData)
-    var lineChartData = {
-      labels  : ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-      datasets: [
-        {
-          label               : '当月综评量化分',
-          backgroundColor     : 'rgba(60,141,188,0.9)',
-          borderColor         : 'rgba(60,141,188,0.8)',
-          pointColor          : '#3b8bba',
-          pointStrokeColor    : 'rgba(60,141,188,1)',
-          pointHighlightFill  : '#fff',
-          pointHighlightStroke: 'rgba(60,141,188,1)',
-          data                : [28, 48, 40, 19, 86, 27, 90]
-        },
-        {
-          label               : '当月排名',
-          backgroundColor     : 'rgba(210, 214, 222, 1)',
-          borderColor         : 'rgba(210, 214, 222, 1)',
-          pointColor          : 'rgba(210, 214, 222, 1)',
-          pointStrokeColor    : '#c1c7d1',
-          pointHighlightFill  : '#fff',
-          pointHighlightStroke: 'rgba(220,220,220,1)',
-          data                : [34, 24, 32, 14, 43, 2, 32]
-        },
-      ]
-    }
-    lineChartData.datasets[0].fill = false;
-    lineChartData.datasets[1].fill = false;
-    lineChartOptions.datasetFill = false
-
-    var lineChart = new Chart(lineChartCanvas, {
-      type: 'line',
-      data: lineChartData,
-      options: lineChartOptions
-    })
-
-    //-------------
-    //- LINE CHART2 -
-    //--------------
-    var lineChartCanvas = $('#lineChart2').get(0).getContext('2d')
-    // var lineChartOptions = $.extend(true, {}, areaChartOptions)
-    var lineChartOptions = {
-      maintainAspectRatio : false,
-      responsive : true,
-      legend: {
-        display: true
-      },
-      scales: {
-        xAxes: [{
-          gridLines : {
-            display : true,
-          }
-        }],
-        yAxes: [{
-          gridLines : {
-            display : false,
-          }
-        }]
-      }
-    }
-    // var lineChartData = $.extend(true, {}, areaChartData)
-    var lineChartData = {
-      labels  : ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-      datasets: [
-        {
-          label               : '总综评量化分',
-          backgroundColor     : 'rgba(60,141,188,0.9)',
-          borderColor         : 'rgba(60,141,188,0.8)',
-          pointColor          : '#3b8bba',
-          pointStrokeColor    : 'rgba(60,141,188,1)',
-          pointHighlightFill  : '#fff',
-          pointHighlightStroke: 'rgba(60,141,188,1)',
-          data                : [28, 48, 40, 19, 86, 27, 90]
-        },
-        {
-          label               : '总分排名',
-          backgroundColor     : 'rgba(210, 214, 222, 1)',
-          borderColor         : 'rgba(210, 214, 222, 1)',
-          pointColor          : 'rgba(210, 214, 222, 1)',
-          pointStrokeColor    : '#c1c7d1',
-          pointHighlightFill  : '#fff',
-          pointHighlightStroke: 'rgba(220,220,220,1)',
-          data                : [23, 11, 3, 32, 21, 54, 90]
-        },
-      ]
-    }
-    lineChartData.datasets[0].fill = false;
-    lineChartData.datasets[1].fill = false;
-    lineChartOptions.datasetFill = false
-
-    var lineChart = new Chart(lineChartCanvas, {
-      type: 'line',
-      data: lineChartData,
-      options: lineChartOptions
-    })
-  })
-</script>
 {% endblock %}
